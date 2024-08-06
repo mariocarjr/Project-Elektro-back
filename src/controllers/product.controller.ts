@@ -3,32 +3,32 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-class UserController {
+class ProductController {
   public async create(request: Request, response: Response) {
-    const { nome, email, senha, endereco, telefone, tipo_usuario } = request.body;
+    const { nome, descricao, preco, estado, id_usuario } = request.body;
 
     try {
-      const newUser = await prisma.usuario.create({
+      const newProduct = await prisma.produto.create({
         data: {
           nome,
-          email,
-          senha,
-          endereco,
-          telefone,
-          tipo_usuario,
+          descricao,
+          preco,
+          estado,
+          id_usuario,
         },
       });
 
-      return response.status(201).json(newUser);
+      return response.status(201).json(newProduct);
     } catch (error) {
-      return response.status(500).json({ error: "Erro interno no servidor" });
+      console.error("Erro ao criar o produto: ", error);
+      return response.status(500).json({ error: "Erro interno no servidor", details: (error as Error).message });
     }
   }
 
   public async readAll(request: Request, response: Response) {
     try {
-      const users = await prisma.usuario.findMany();
-      return response.status(200).json(users);
+      const products = await prisma.produto.findMany();
+      return response.status(200).json(products);
     } catch (error) {
       return response.status(500).json({ error: "Erro interno no servidor" });
     }
@@ -38,15 +38,15 @@ class UserController {
     const { id } = request.params;
 
     try {
-      const user = await prisma.usuario.findUnique({
-        where: { id_usuario: Number(id) },
+      const product = await prisma.produto.findUnique({
+        where: { id_produto: Number(id) },
       });
 
-      if (!user) {
-        return response.status(404).json({ error: "Usuário não encontrado" });
+      if (!product) {
+        return response.status(404).json({ error: "Produto não encontrado" });
       }
 
-      return response.status(200).json(user);
+      return response.status(200).json(product);
     } catch (error) {
       return response.status(500).json({ error: "Erro interno no servidor" });
     }
@@ -54,22 +54,21 @@ class UserController {
 
   public async update(request: Request, response: Response) {
     const { id } = request.params;
-    const { nome, email, senha, endereco, telefone, tipo_usuario } = request.body;
+    const { nome, descricao, preco, estado, id_usuario } = request.body;
 
     try {
-      const updatedUser = await prisma.usuario.update({
-        where: { id_usuario: Number(id) },
+      const updatedProduct = await prisma.produto.update({
+        where: { id_produto: Number(id) },
         data: {
           nome,
-          email,
-          senha,
-          endereco,
-          telefone,
-          tipo_usuario,
+          descricao,
+          preco,
+          estado,
+          id_usuario,
         },
       });
 
-      return response.status(200).json(updatedUser);
+      return response.status(200).json(updatedProduct);
     } catch (error) {
       return response.status(500).json({ error: "Erro interno no servidor" });
     }
@@ -79,8 +78,8 @@ class UserController {
     const { id } = request.params;
 
     try {
-      await prisma.usuario.delete({
-        where: { id_usuario: Number(id) },
+      await prisma.produto.delete({
+        where: { id_produto: Number(id) },
       });
 
       return response.status(204).send();
@@ -88,7 +87,7 @@ class UserController {
       return response.status(500).json({ error: "Erro interno no servidor" });
     }
   }
+
 }
 
-export const userController = new UserController();
-
+export const productController = new ProductController();
