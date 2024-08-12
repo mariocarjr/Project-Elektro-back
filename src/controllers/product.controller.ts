@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Produto } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +8,7 @@ class ProductController {
     const { nome, descricao, preco, estado, id_usuario } = request.body;
 
     try {
-      const newProduct = await prisma.produto.create({
+      const newProduct: Produto = await prisma.produto.create({
         data: {
           nome,
           descricao,
@@ -51,43 +51,6 @@ class ProductController {
       return response.status(500).json({ error: "Erro interno no servidor" });
     }
   }
-
-  public async update(request: Request, response: Response) {
-    const { id } = request.params;
-    const { nome, descricao, preco, estado, id_usuario } = request.body;
-
-    try {
-      const updatedProduct = await prisma.produto.update({
-        where: { id_produto: Number(id) },
-        data: {
-          nome,
-          descricao,
-          preco,
-          estado,
-          id_usuario,
-        },
-      });
-
-      return response.status(200).json(updatedProduct);
-    } catch (error) {
-      return response.status(500).json({ error: "Erro interno no servidor" });
-    }
-  }
-
-  public async delete(request: Request, response: Response) {
-    const { id } = request.params;
-
-    try {
-      await prisma.produto.delete({
-        where: { id_produto: Number(id) },
-      });
-
-      return response.status(204).send();
-    } catch (error) {
-      return response.status(500).json({ error: "Erro interno no servidor" });
-    }
-  }
-
 }
 
-export const productController = new ProductController();
+export default ProductController;
